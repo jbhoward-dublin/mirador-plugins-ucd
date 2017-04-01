@@ -43,17 +43,17 @@ var linkFromThePage = {
         var _this= this;
         
         _this.eventEmitter.subscribe('manifestQueued', function(event, data) {
-          //console.log('1: manifest queued');
+          console.log('1: manifest queued');
           hideTranscriptionLink(); 
         })
 
         _this.eventEmitter.subscribe('manifestReceived', function(event, data) {
-           //console.log('2: manifest received');
+           console.log('2: manifest received');
            hideTranscriptionLink();
         })
 
         _this.eventEmitter.subscribe('REMOVE_WINDOW', function(event, data) {
-           //console.log('3: window removed');
+           console.log('3: window removed');
            if (getNumSlots() > 1) { hideTranscriptionLink(); }
            if (getNumSlots() == 1) {
              var currentImgID = $(".thumbnail-image.highlight").attr('data-image-id'); 
@@ -63,7 +63,7 @@ var linkFromThePage = {
         })
 
         _this.eventEmitter.subscribe('REMOVE_NODE', function(event, data) {
-           //console.log('4: node removed');
+           console.log('4: node removed');
            if (getNumSlots() < 2) {
              var currentImgID = $(".thumbnail-image.highlight").attr('data-image-id');
              var fromThePageURI = linktoFromThePage(currentImgID,'canvases');
@@ -72,12 +72,12 @@ var linkFromThePage = {
         })
 /* 
         _this.eventEmitter.subscribe('ADD_SLOT_ITEM', function(event, data) {
-           //console.log('5: slot added');
+           console.log('5: slot added');
            
         })
 */
         _this.eventEmitter.subscribe('ADD_WINDOW', function(event, data) {      // window populated by images 
-           //console.log('6: window added');
+           console.log('6: window added');
            hideTranscriptionLink();
            if (data.loadedManifest !== undefined) {
              var fromThePageURI = linktoFromThePage(data.loadedManifest,'manifests');
@@ -93,22 +93,22 @@ var linkFromThePage = {
         })
 
         _this.eventEmitter.subscribe('SPLIT_RIGHT', function(event, data) {
-           //console.log('7: split right');
+           console.log('7: split right');
            hideTranscriptionLink();
         })
 
         _this.eventEmitter.subscribe('SPLIT_LEFT', function(event, data) {
-           //console.log('8: split left');
+           console.log('8: split left');
            hideTranscriptionLink();
         })
 
         _this.eventEmitter.subscribe('SPLIT_DOWN', function(event, data) {
-           //console.log('9: split down');
+           console.log('9: split down');
            hideTranscriptionLink();
         })
 
         _this.eventEmitter.subscribe('SPLIT_UP', function(event, data) {
-           //console.log('10: split up');
+           console.log('10: split up');
            hideTranscriptionLink();
         })
         origFunc.apply(this); 
@@ -123,7 +123,7 @@ var linkFromThePage = {
       originalListenForActions.apply(this, arguments);
 
       this.eventEmitter.subscribe('windowUpdated', function(event, data){
-        //console.log('A: window updated');
+        console.log('A: window updated');
         if (data.canvasID !== undefined && getNumSlots() < 2) { 
           var fromThePageURI = linktoFromThePage(data.canvasID,'canvases');
           return;
@@ -196,6 +196,16 @@ function linktoFromThePage(ID, type) {
         //console.log(errorMsg);
         if (manifestsFromThePage[ID] === undefined) {
           manifestsFromThePage[ID] = '';	/* so we don't have to check again */
+          return;
+        }
+        return;
+      }
+      else if(xhr.status==401) {
+        ID = null;
+        //console.log(errorMsg);
+        if (manifestsFromThePage[ID] === undefined) {
+          manifestsFromThePage[ID] = '';	/* so we don't have to check again */
+          alert('This is a private collection in FromThePage. Please login directly to FromThePage for further information.');
           return;
         }
         return;

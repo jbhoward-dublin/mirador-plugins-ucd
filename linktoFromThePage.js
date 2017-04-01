@@ -124,12 +124,16 @@ var linkFromThePage = {
 
       this.eventEmitter.subscribe('windowUpdated', function(event, data){
         //console.log('A: window updated');
-        if (getNumSlots() > 1) { hideTranscriptionLink(); }
-        var loadedManifest;
         if (data.canvasID !== undefined && getNumSlots() < 2) { 
           var fromThePageURI = linktoFromThePage(data.canvasID,'canvases');
           return;
+        } else if (getNumSlots() == 1) {
+          if (data.loadedManifest !== undefined) {
+             var fromThePageURI = linktoFromThePage(data.loadedManifest,'manifests');
+             return;
+           }
         }
+        if (getNumSlots() > 1) { hideTranscriptionLink(); }
       }.bind(this));
     }
     Mirador[viewType].prototype.listenForActions = extendedListenForActions; 

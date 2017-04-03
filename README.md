@@ -2,7 +2,9 @@
 
 This repository contains extensions for the IIIF viewer Mirador (see http://projectmirador.org/).
 
-## Link to FromThePage (linktoFromThePage_ucd.js)
+## Link to FromThePage 
+
+linktoFromThePage_ucd.js
 
 Determines whether manifests loaded to Mirador have been imported to the [FromThePage transcription platform](http://fromthepage.com/) then presents a userButton to link to the resource on that site.
 

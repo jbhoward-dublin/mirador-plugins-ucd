@@ -210,7 +210,8 @@ function linktoFromThePage(ID, type) {
         }
         return;
       }
-    } 
+    },
+    timeout: 10000
   });
   return;
 }

@@ -292,10 +292,10 @@ var manifestsFromThePage = {
   "https://data.ucd.ie/api/img/manifests/ivrla:3849": "http://fromthepage.com/iiif/355/manifest",
   "https://data.ucd.ie/api/img/ivrla:3849/canvas/ivrla:3850": "http://fromthepage.com/iiif/355/manifest",
   "https://data.ucd.ie/api/img/manifests/ivrla:3827": "http://fromthepage.com/iiif/340/manifest",
-  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3828": "http://fromthepage.com/iiif/355/manifest",
-  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3829": "http://fromthepage.com/iiif/355/manifest",
-  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3830": "http://fromthepage.com/iiif/355/manifest",
-  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3831": "http://fromthepage.com/iiif/355/manifest"
+  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3828": "http://fromthepage.com/iiif/340/manifest",
+  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3829": "http://fromthepage.com/iiif/340/manifest",
+  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3830": "http://fromthepage.com/iiif/340/manifest",
+  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3831": "http://fromthepage.com/iiif/340/manifest"
 };
 
 /*

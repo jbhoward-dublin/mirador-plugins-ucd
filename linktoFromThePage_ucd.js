@@ -2,14 +2,14 @@
  * configuration choices
  */
  
-var config ={
-    "show_tei_link": false,
-    "show_xhtml_link": true
+var configFromThePage = {
+    "show_status_link": true,       // provide link to FromThePage's xhtml output
+    "timeoutFromThePage": 4000      // maximum tolerable latency for a FromThePage response
 }
 
 var linkFromThePage = { 
 /* 
- * deploying depends on implementation of security certificate at FromThePage.com
+ * setup user buttons & styles in Mirador, process data
  * 
  */
   /* the template for the Transcribe buttons */
@@ -21,12 +21,11 @@ var linkFromThePage = {
     '</li>'
   ].join('')),
   template_status: Handlebars.compile([
-    '</li>',
     '<li>',
     '<a class="status hidden hidden-xs btn btn-danger btn-xs hidden-sm i18n" style="vertical-align: top!important; background-color: red; font-weight: bold; color: #FFF" target="_blank" data-i18n="status;[title]statusTooltip" title="View transcription status" href>',
     '  Status',
     '</a>',
-    '</li>' 
+    '</li>'
   ].join('')),
   newStyle: Handlebars.compile([
     '<style>',
@@ -45,14 +44,14 @@ var linkFromThePage = {
     $("body").append(newStyle);
     var injector = setInterval(appendButton,200); /* wait for Mirador to inject userButtons into the DOM */
     function appendButton() {
-      if ($(".status").length === 0){
-        if (config['show_xhtml_link'] == true) {
-           $("body > #viewer > div.mirador-main-menu-bar > ul.user-buttons").prepend(statusButton);
+      if (!$("a").hasClass("transcribe")) {
+        if (configFromThePage["show_status_link"] == true) { 
+          $("body > #viewer > div.mirador-main-menu-bar > ul.user-buttons").prepend(statusButton);
         }
         $("body > #viewer > div.mirador-main-menu-bar > ul.user-buttons").prepend(transcribeButton);
         setTimeout(function() {
           clearInterval(injector);
-        }, 10000);
+          }, 10000);
       }
     }
     this.addLocalesToViewer();
@@ -74,8 +73,8 @@ var linkFromThePage = {
   
     locales: {
     'ga': {
-      'transcribe': 'trascríobh',
-      'status': 'stádas'
+      'transcribe': 'Trascríobh',
+      'status': 'Stádas'
     },
     'en': {
       'transcribe': 'Transcribe',
@@ -92,11 +91,11 @@ var linkFromThePage = {
     if (manifestsFromThePage[ID] !== undefined) {
       return;
     }
+    ID = $.trim(ID);
     Mirador.MetadataView.prototype.getMetadataDetails = function(jsonLd) {
       var recordID = jsonLd["@id"];
       var duchasURI;
-      if (ID = $.trim(jsonLd["@id"])) {
-        var manifestID = $.trim(jsonLd["@id"]);
+      if (ID == recordID) {
         if (jsonLd.seeAlso) {
           $.each(jsonLd.seeAlso, function(index, item) {
             var label = Mirador.JsonLd.getTextValue(item.label);
@@ -105,23 +104,21 @@ var linkFromThePage = {
             if (~id.indexOf("http://www.duchas.ie/en/cbes/")) {
                duchasURI = id;
             }
-            if (format == 'application/tei+xml') { /* if already described, don't provide a link */
+            if (duchasURI !== undefined) {
+              manifestsFromThePage[ID] = duchasURI; 
+            }
+            if (format == 'application/tei+xml') { /* already described */
               duchasTranscribed = true;
-              manifestsFromThePage[manifestID] = '';
-            } else {
-              manifestsFromThePage[manifestID] = duchasURI;
             }
           });
         }
-        $.each(jsonLd.sequences[0].canvases[0], function(index, item) {
-          var label = Mirador.JsonLd.getTextValue(item.label);
-          if (index == "@id") { /* add canvas IDs to manifestsFromThePage hash */
-            if (duchasTranscribed == true) {
-              manifestsFromThePage[item] = '';
-            } else {
-              manifestsFromThePage[item] = duchasURI;
-            }
-          }
+        /* add all canvas @ids in the manifest to the manifestsFromThePage hash */
+        $.each(jsonLd.sequences[0].canvases, function(index, item) {
+            $.each(this, function(index, val) {
+              if (index == '@id') {
+                manifestsFromThePage[val] = duchasURI;
+              }
+            });
         });
       }
       return;
@@ -152,8 +149,15 @@ var linkFromThePage = {
            if (getNumSlots() == 1) {
              var currentImgID = $(".thumbnail-image.highlight").attr('data-image-id');
              if (currentImgID.indexOf("duchas:") >= 0) {
+             updateTranscriptionLink(currentImgID,'');
+             /*
                $('a.transcribe').attr("href",manifestsFromThePage[currentImgID]);
                $('a.transcribe').removeClass("hidden");
+               if ($('a.status')) {
+                 $('a.status').removeClass("hidden");
+                 $('a.status').attr("href",setLinkTypeFromThePage(manifestsFromThePage[currentImgID],'xhtml'));
+               }
+               */
                return;
              }
              else if (manifestsFromThePage[currentImgID] == undefined) {
@@ -242,7 +246,7 @@ var linkFromThePage = {
       this.eventEmitter.subscribe('windowUpdated', function(event, data){
         //console.log('A: window updated');
         var currentImgID = $.trim($(".thumbnail-image.highlight").attr('data-image-id'));
-        if (getNumSlots() == 1) {
+        if (getNumSlots() < 2) {
            if (manifestsFromThePage[currentImgID] !== undefined) {
              if (currentImgID.indexOf("duchas:") >= 0) {
                $('a.transcribe').attr("href",manifestsFromThePage[currentImgID]);
@@ -255,17 +259,25 @@ var linkFromThePage = {
              return;
            }
            else {
-             var fromThePageURI = linktoFromThePage(currentImgID,'canvases');
-             return;
+             if (currentImgID !== undefined && currentImgID != '') {
+               var fromThePageURI = linktoFromThePage(currentImgID,'canvases');
+               return;
+             }
            }
            if ( duchasTranscribed == false && ( manifestsFromThePage[currentImgID] !== undefined && manifestsFromThePage[currentImgID] !== "" ) ) {
              var fromThePageURI = linktoFromThePage(currentImgID,'canvases');
              $('a.transcribe').attr("href",fromThePageURI);
              $('a.transcribe').removeClass("hidden");
+             if ($('a.status').hasClass("hidden")) {
+               $('a.status').removeClass("hidden");
+               $('a.status').attr("href",setLinkTypeFromThePage(manifestsFromThePage[currentImgID],'xhtml'));
+             }
              return;
            }
         }
-        else { hideTranscriptionLink(); }
+        else { 
+          hideTranscriptionLink(); 
+        }
       }.bind(this));
     }
     Mirador[viewType].prototype.listenForActions = extendedListenForActions; 
@@ -289,13 +301,13 @@ var linkFromThePage = {
 var duchasTranscribed = false;
 
 var manifestsFromThePage = {
-  "https://data.ucd.ie/api/img/manifests/ivrla:3849": "http://fromthepage.com/iiif/355/manifest",
-  "https://data.ucd.ie/api/img/ivrla:3849/canvas/ivrla:3850": "http://fromthepage.com/iiif/355/manifest",
-  "https://data.ucd.ie/api/img/manifests/ivrla:3827": "http://fromthepage.com/iiif/340/manifest",
-  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3828": "http://fromthepage.com/iiif/340/manifest",
-  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3829": "http://fromthepage.com/iiif/340/manifest",
-  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3830": "http://fromthepage.com/iiif/340/manifest",
-  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3831": "http://fromthepage.com/iiif/340/manifest"
+  "https://data.ucd.ie/api/img/manifests/ivrla:3849": "https://fromthepage.com/iiif/355/manifest",
+  "https://data.ucd.ie/api/img/ivrla:3849/canvas/ivrla:3850": "https://fromthepage.com/iiif/355/manifest",
+  "https://data.ucd.ie/api/img/manifests/ivrla:3827": "https://fromthepage.com/iiif/340/manifest",
+  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3828": "https://fromthepage.com/iiif/340/manifest",
+  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3829": "https://fromthepage.com/iiif/340/manifest",
+  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3830": "https://fromthepage.com/iiif/340/manifest",
+  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3831": "https://fromthepage.com/iiif/340/manifest"
 };
 
 /*
@@ -327,12 +339,13 @@ function linktoFromThePage(ID, type) {
     updateTranscriptionLink(ID,type);
     return manifestsFromThePage[ID];
   }
-
+  
   if (ID.indexOf("duchas:") >= 0) {
     linkFromThePage.windowGetJSON(ID);
+    return;
   }
-  
-  var url = 'http://fromthepage.com/iiif/for/' + ID;
+
+  var url = 'https://fromthepage.com/iiif/for/' + ID;
 
   $.ajax(url, {
     success: function(responseText) {
@@ -352,17 +365,16 @@ function linktoFromThePage(ID, type) {
       }
     },
     error:function (xhr, ajaxOptions, errorMsg){
+      manifestsFromThePage[ID] = "";	/* so we don't have to check again */
       if(xhr.status==404) {
         //console.log(errorMsg);
-        manifestsFromThePage[ID] = "";	/* so we don't have to check again */
       }
       else if(xhr.status==401) {
         //console.log(errorMsg);
-        manifestsFromThePage[ID] = "";	/* so we don't have to check again */
         alert('This is a private collection in FromThePage. Please login directly to FromThePage for further information.');
       }
     },
-    timeout: 10000
+    timeout: configFromThePage['timeoutFromThePage']
   });
 }
 
@@ -374,11 +386,15 @@ function updateTranscriptionLink(ID,type) {
   if (manifestsFromThePage[ID] !== undefined && manifestsFromThePage[ID] !== null && manifestsFromThePage[ID] !== "") { 
     if (getNumSlots() == 1) {
       var link = setLinkTypeFromThePage(manifestsFromThePage[ID],'read');
-      $('a.transcribe').attr("href",link);
-      $('a.transcribe').removeClass("hidden");
-      /* one can provide an option of a link to HTML that shows formatted transcription & status */
-      $('a.status').attr("href",setLinkTypeFromThePage(manifestsFromThePage[ID],'xhtml'));
-      $('a.status').removeClass("hidden");
+      if (link.substr(link.indexOf("work_id") + 8).length) {
+        $('a.transcribe').attr("href",link);
+        $('a.transcribe').removeClass("hidden");
+        /* one can configure an option to link to HTML that shows formatted transcription & status */
+        if ($('a.status') && duchasTranscribed == false) {
+          $('a.status').attr("href",setLinkTypeFromThePage(manifestsFromThePage[ID],'xhtml'));
+          $('a.status').removeClass("hidden");
+        }
+      }
     }
   }
 }
@@ -389,22 +405,22 @@ function setLinkTypeFromThePage(uri,activity) {
   var uri;
   switch (activity) {
     case 'about':
-      uri = 'http://fromthepage.com/work/show?work_id=' + val;
+      uri = 'https://fromthepage.com/work/show?work_id=' + val;
       break;
     case 'edit':
-      uri = 'http://fromthepage.com/work/edit?work_id=' + val;
+      uri = 'https://fromthepage.com/work/edit?work_id=' + val;
       break;
     case 'read':
-      uri = 'http://fromthepage.com/display/read_work?work_id=' + val;
+      uri = 'https://fromthepage.com/display/read_work?work_id=' + val;
       break;
     case 'show':
-      uri = 'http://fromthepage.com/display/show?work_id=' + val;
+      uri = 'https://fromthepage.com/display/show?work_id=' + val;
       break;
     case 'xhtml':
-      uri = 'http://fromthepage.com/export/show?work_id=' + val;
+      uri = 'https://fromthepage.com/export/show?work_id=' + val;
       break;
     default:
-      uri = 'http://fromthepage.com/display/read_work?work_id=' + val;
+      uri = 'https://fromthepage.com/display/read_work?work_id=' + val;
   }
   return uri;
 }
@@ -426,7 +442,7 @@ function getNumSlots() {
 }
 
 $(document).ready(function(){
-  if ( $('a.transcribe').length == 0) {
+  if ( !$('a').hasClass("transcribe")) {
     linkFromThePage.injectUserButton();
   }
   linkFromThePage.init(); 

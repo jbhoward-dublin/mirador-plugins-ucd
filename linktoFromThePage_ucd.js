@@ -4,7 +4,7 @@
  
 var configFromThePage = {
     "show_status_link": true,       // provide link to FromThePage's xhtml output
-    "timeoutFromThePage": 4000      // maximum tolerable latency for a FromThePage response
+    "timeoutFromThePage": 5000      // maximum tolerable latency for a FromThePage response
 }
 
 var linkFromThePage = { 
@@ -16,14 +16,14 @@ var linkFromThePage = {
   template_transcribe: Handlebars.compile([
     '<li>',
     '<a class="transcribe hidden hidden-xs btn btn-danger btn-xs hidden-sm i18n" style="vertical-align: top!important; background-color: red; font-weight: bold; color: #FFF" target="_blank" data-i18n="transcribe;[title]transcribeTooltip" title="Link to Transcription Site" href>',
-    '  Transcribe',
+    '  transcribe',
     '</a>',
     '</li>'
   ].join('')),
   template_status: Handlebars.compile([
     '<li>',
     '<a class="status hidden hidden-xs btn btn-danger btn-xs hidden-sm i18n" style="vertical-align: top!important; background-color: red; font-weight: bold; color: #FFF" target="_blank" data-i18n="status;[title]statusTooltip" title="View transcription status" href>',
-    '  Status',
+    '  status',
     '</a>',
     '</li>'
   ].join('')),
@@ -73,12 +73,12 @@ var linkFromThePage = {
   
     locales: {
     'ga': {
-      'transcribe': 'Trascríobh',
-      'status': 'Stádas'
+      'transcribe': 'trascríobh',
+      'status': 'stádas'
     },
     'en': {
-      'transcribe': 'Transcribe',
-      'status': 'Status'
+      'transcribe': 'transcribe',
+      'status': 'status'
     }
   },
 
@@ -173,6 +173,7 @@ var linkFromThePage = {
 
         _this.eventEmitter.subscribe('REMOVE_NODE', function(event, data) {
            //console.log('4: node removed');
+           hideTranscriptionLink();
            if (getNumSlots() < 2) {
              var currentImgID = $(".thumbnail-image.highlight").attr('data-image-id');
              var fromThePageURI = linktoFromThePage(currentImgID,'canvases');
@@ -203,7 +204,7 @@ var linkFromThePage = {
              var canvasID = data.canvasID;
              if (getPID(data.canvasID) == canvasID.split('/').pop().split('.').shift()) {
                /* we've got a problem ... */
-               console.log('Mirador.Workspace ADD_WINDOW event returned bad value for data.canvasID');
+               //console.log('Mirador.Workspace ADD_WINDOW event returned bad value for data.canvasID');
                var tmp = 'https://data.ucd.ie/api/img/manifests/' + getPID(data.canvasID);
                var fromThePageURI = linktoFromThePage(tmp,'manifests');
                return;
@@ -238,13 +239,14 @@ var linkFromThePage = {
 
   /* ImageView & BookView  */
   addEventHandlersToViewer: function(viewType){ 
-    hideTranscriptionLink();
     var originalListenForActions = Mirador[viewType].prototype.listenForActions;
     var extendedListenForActions = function(){
       originalListenForActions.apply(this, arguments);
       
       this.eventEmitter.subscribe('windowUpdated', function(event, data){
         //console.log('A: window updated');
+        hideTranscriptionLink();
+        if (getNumSlots() >1) { return; }
         var currentImgID = $.trim($(".thumbnail-image.highlight").attr('data-image-id'));
         if (getNumSlots() < 2) {
            if (manifestsFromThePage[currentImgID] !== undefined) {
@@ -390,10 +392,10 @@ function updateTranscriptionLink(ID,type) {
         $('a.transcribe').attr("href",link);
         $('a.transcribe').removeClass("hidden");
         /* one can configure an option to link to HTML that shows formatted transcription & status */
-        if ($('a.status') && duchasTranscribed == false) {
+        //if ($('a.status') && duchasTranscribed == false) {
           $('a.status').attr("href",setLinkTypeFromThePage(manifestsFromThePage[ID],'xhtml'));
           $('a.status').removeClass("hidden");
-        }
+        //}
       }
     }
   }

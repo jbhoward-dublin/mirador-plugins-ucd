@@ -87,6 +87,7 @@ var linkFromThePage = {
    */ 
 
   /*  UCD specific: */
+  
   windowGetJSON: function (ID) {
     if (manifestsFromThePage[ID] !== undefined) {
       return;
@@ -164,7 +165,7 @@ var linkFromThePage = {
                var fromThePageURI = linktoFromThePage(currentImgID,'canvases');
                return;
              }
-             else if (manifestsFromThePage[currentImgID] !== undefined && manifestsFromThePage[currentImgID] !== "") {
+             else if (manifestsFromThePage[currentImgID] !== undefined && manifestsFromThePage[currentImgID] !== null) {
                var fromThePageURI = linktoFromThePage(currentImgID,'canvases');
              }
              return;
@@ -173,30 +174,36 @@ var linkFromThePage = {
 
         _this.eventEmitter.subscribe('REMOVE_NODE', function(event, data) {
            //console.log('4: node removed');
+           //console.log(manifestsFromThePage);
            hideTranscriptionLink();
            if (getNumSlots() < 2) {
              var currentImgID = $(".thumbnail-image.highlight").attr('data-image-id');
-             var fromThePageURI = linktoFromThePage(currentImgID,'canvases');
+             if (manifestsFromThePage[currentImgID] !== undefined && manifestsFromThePage[currentImgID] !== null) {
+               var fromThePageURI = linktoFromThePage(currentImgID,'canvases');
+             }
              return;
            }
         })
-        
+/* 
         _this.eventEmitter.subscribe('ADD_SLOT_ITEM', function(event, data) {
            //console.log('5: slot added');
            hideTranscriptionLink();
         })
-        
+*/
         _this.eventEmitter.subscribe('ADD_WINDOW', function(event, data) {      // window populated by images 
            //console.log('6: window added');
+           //console.log(manifestsFromThePage);
            hideTranscriptionLink();
            if (data.manifest !== undefined) {
              if (data.manifest.uri !== undefined && data.manifest.uri !== null) {
-               var fromThePageURI = linktoFromThePage(data.manifest.uri,'manifests');
+               if (manifestsFromThePage[data.manifest.uri] !== undefined && manifestsFromThePage[data.manifest.uri] !== null) {
+                 var fromThePageURI = linktoFromThePage(data.manifest.uri,'manifests');
+               }
                return;
              }
            }
            if (data.canvasID !== undefined && data.canvasID !== null) {
-             /* there appears to be a Mirador bug returning a bad canvasID
+             /* there appears to be a Mirador bug returning a bad canvasID, also with windowUpdated function (used below)
               * for example: https://data.ucd.ie/api/img/ivrla:3853/canvas/ivrla:3853 
               * compare manifest: https://data.ucd.ie/api/img/manifests/ivrla:3853
               * the test below is specific to UCD manifests
@@ -204,12 +211,16 @@ var linkFromThePage = {
              var canvasID = data.canvasID;
              if (getPID(data.canvasID) == canvasID.split('/').pop().split('.').shift()) {
                /* we've got a problem ... */
-               //console.log('Mirador.Workspace ADD_WINDOW event returned bad value for data.canvasID');
+               console.log('Mirador.Workspace ADD_WINDOW event returned bad value for data.canvasID');
                var tmp = 'https://data.ucd.ie/api/img/manifests/' + getPID(data.canvasID);
-               var fromThePageURI = linktoFromThePage(tmp,'manifests');
+               if (manifestsFromThePage[tmp] !== undefined && manifestsFromThePage[tmp] !== null) {
+                 var fromThePageURI = linktoFromThePage(tmp,'manifests');
+               }
                return;
              }
-             var fromThePageURI = linktoFromThePage(data.canvasID,'canvases');
+             if (manifestsFromThePage[data.canvasID] !== undefined && manifestsFromThePage[data.canvasID] !== null) {
+               var fromThePageURI = linktoFromThePage(data.canvasID,'canvases');
+             }
              return;
            }
         })
@@ -244,29 +255,42 @@ var linkFromThePage = {
       originalListenForActions.apply(this, arguments);
       
       this.eventEmitter.subscribe('windowUpdated', function(event, data){
-        //console.log('A: window updated');
+        /*
+         * 
+         */
+        // console.log('A: window updated');
+        /*
+         * 
+         */
         hideTranscriptionLink();
-        if (getNumSlots() >1) { return; }
+        if (getNumSlots() > 1) { return; }
         var currentImgID = $.trim($(".thumbnail-image.highlight").attr('data-image-id'));
         if (getNumSlots() < 2) {
-           if (manifestsFromThePage[currentImgID] !== undefined) {
+           if (manifestsFromThePage[currentImgID] !== undefined && manifestsFromThePage[currentImgID] !== null) {
              if (currentImgID.indexOf("duchas:") >= 0) {
                $('a.transcribe').attr("href",manifestsFromThePage[currentImgID]);
                $('a.transcribe').removeClass("hidden");
              }
              else {
-               var fromThePageURI = linktoFromThePage(currentImgID,'canvases');
+               if (manifestsFromThePage[currentImgID] !== false) {
+                 var fromThePageURI = linktoFromThePage(currentImgID,'canvases');
+               }
                return;
              }
              return;
            }
            else {
              if (currentImgID !== undefined && currentImgID != '') {
-               var fromThePageURI = linktoFromThePage(currentImgID,'canvases');
-               return;
+               if (manifestsFromThePage[currentImgID] !== null) {
+                 if (manifestsFromThePage[currentImgID] !== false) {
+                   var fromThePageURI = linktoFromThePage(currentImgID,'canvases');
+                 }
+                 return;
+               }
              }
            }
-           if ( duchasTranscribed == false && ( manifestsFromThePage[currentImgID] !== undefined && manifestsFromThePage[currentImgID] !== "" ) ) {
+           if ( duchasTranscribed == false && ( manifestsFromThePage[currentImgID] !== undefined && manifestsFromThePage[currentImgID] !== "" && manifestsFromThePage[currentImgID] !== null) ) {
+             /* console.log('executing linktoFromThePage with callback 3');
              var fromThePageURI = linktoFromThePage(currentImgID,'canvases');
              $('a.transcribe').attr("href",fromThePageURI);
              $('a.transcribe').removeClass("hidden");
@@ -275,11 +299,10 @@ var linkFromThePage = {
                $('a.status').attr("href",setLinkTypeFromThePage(manifestsFromThePage[currentImgID],'xhtml'));
              }
              return;
+             */
            }
         }
-        else { 
-          hideTranscriptionLink(); 
-        }
+        hideTranscriptionLink(); 
       }.bind(this));
     }
     Mirador[viewType].prototype.listenForActions = extendedListenForActions; 
@@ -309,7 +332,10 @@ var manifestsFromThePage = {
   "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3828": "https://fromthepage.com/iiif/340/manifest",
   "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3829": "https://fromthepage.com/iiif/340/manifest",
   "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3830": "https://fromthepage.com/iiif/340/manifest",
-  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3831": "https://fromthepage.com/iiif/340/manifest"
+  "https://data.ucd.ie/api/img/ivrla:3827/canvas/ivrla:3831": "https://fromthepage.com/iiif/340/manifest",
+  "https://data.ucd.ie/api/img/manifests/ivrla:3835": "https://fromthepage.com/iiif/344/manifest",
+  "https://data.ucd.ie/api/img/ivrla:3835/canvas/ivrla:3836": "https://fromthepage.com/iiif/344/manifest",  
+  "https://data.ucd.ie/api/img/ivrla:3835/canvas/ivrla:3837": "https://fromthepage.com/iiif/344/manifest"
 };
 
 /*
@@ -332,12 +358,21 @@ function linktoFromThePage(ID, type) {
   if (typeof type === undefined) {
     type = 'manifests';
   }
+  if (manifestsFromThePage[ID] !== undefined) {
+    if (manifestsFromThePage[ID] == null) {
+        return;
+    }
+  }
+  
+  manifestsFromThePage[ID] = false; /* experiment */
+  
+  
 
   /* add protocol declaration if missing ... not appropriate for all sites */
   if (ID.substring(0,2) == '//') { ID = $.trim('https:' + ID); }
   
   /* skip if previously queried */
-  if (manifestsFromThePage[ID] !== undefined || manifestsFromThePage[ID] == '') {
+  if ( (manifestsFromThePage[ID] !== undefined || manifestsFromThePage[ID] == '') && manifestsFromThePage[ID] !== false) {
     updateTranscriptionLink(ID,type);
     return manifestsFromThePage[ID];
   }
@@ -351,33 +386,40 @@ function linktoFromThePage(ID, type) {
 
   $.ajax(url, {
     success: function(responseText) {
-      if (responseText !== undefined) { 
-        if (manifestsFromThePage[ID] === undefined) {
-          if (type == 'manifests') {
-            manifestsFromThePage[ID] = responseText["@id"]; 
-            updateTranscriptionLink(ID,'manifests');
-          }
-          else if (type == 'canvases') {
-            var response = responseText["@id"];
-            response = response.substr(0, response.indexOf('/canvas/')) + '/manifest';
-            manifestsFromThePage[ID] = $.trim(response);
-            updateTranscriptionLink(ID,'canvases');
-          }
-        }
-      }
+      returnResponse(responseText);
     },
     error:function (xhr, ajaxOptions, errorMsg){
-      manifestsFromThePage[ID] = "";	/* so we don't have to check again */
+      //manifestsFromThePage[ID] = "";	/* so we don't have to check again */
       if(xhr.status==404) {
         //console.log(errorMsg);
+        manifestsFromThePage[ID] = null;
       }
-      else if(xhr.status==401) {
+      else if(xhr.status==401) {    /* not implemented at FromThePage */
         //console.log(errorMsg);
-        alert('This is a private collection in FromThePage. Please login directly to FromThePage for further information.');
+        //manifestsFromThePage[ID] = null;
+        //alert('This is a private collection in FromThePage. Please login directly to FromThePage for further information.');
       }
     },
     timeout: configFromThePage['timeoutFromThePage']
   });
+  
+  function returnResponse(data) {
+    if (data !== undefined) {
+      if (manifestsFromThePage[ID] === undefined || manifestsFromThePage[ID] == false) {
+        if (type == 'manifests') {
+          manifestsFromThePage[ID] = data["@id"]; 
+          updateTranscriptionLink(ID,'manifests');
+        }
+        else if (type == 'canvases') {
+          var response = data["@id"];
+          response = data["@id"].substr(0, response.indexOf('/canvas/')) + '/manifest';
+          manifestsFromThePage[ID] = $.trim(response);
+          updateTranscriptionLink(ID,'canvases');
+        }
+      }
+    }
+  }
+  
 }
 
 function updateTranscriptionLink(ID,type) { 
@@ -385,17 +427,24 @@ function updateTranscriptionLink(ID,type) {
     hideTranscriptionLink();
     return;
   }
-  if (manifestsFromThePage[ID] !== undefined && manifestsFromThePage[ID] !== null && manifestsFromThePage[ID] !== "") { 
+  
+  if (type == 'canvases') { /* value should match that of the currentImgID */
+     var currentImgID = $(".thumbnail-image.highlight").attr('data-image-id');
+     ID = currentImgID;
+  }
+  
+  if (manifestsFromThePage[ID] == null || manifestsFromThePage[ID] == false) { return; }
+  if (manifestsFromThePage[ID] !== undefined && manifestsFromThePage[ID] !== "") { 
     if (getNumSlots() == 1) {
       var link = setLinkTypeFromThePage(manifestsFromThePage[ID],'read');
       if (link.substr(link.indexOf("work_id") + 8).length) {
         $('a.transcribe').attr("href",link);
         $('a.transcribe').removeClass("hidden");
         /* one can configure an option to link to HTML that shows formatted transcription & status */
-        //if ($('a.status') && duchasTranscribed == false) {
+        if ($('a.status') && duchasTranscribed == false) {
           $('a.status').attr("href",setLinkTypeFromThePage(manifestsFromThePage[ID],'xhtml'));
           $('a.status').removeClass("hidden");
-        //}
+        }
       }
     }
   }

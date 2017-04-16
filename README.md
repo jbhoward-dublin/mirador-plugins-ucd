@@ -11,5 +11,6 @@ Determines whether manifests loaded to Mirador have been imported to the [FromTh
 To enable it, include the JavaScript linktoFromThePage_ucd.js (**after** loading Mirador):
 
 ```html
-<script src="<plugin_path>/linktoFromThePage_ucd.js"></script>
+<script src="{plugin_path}/linktoFromThePage_ucd.js"></script>
 ```
+(Also creates links to the Dúchas.ie transcription site for IIIF manifests representing stories from the Schools' Collection, National Folklore Collection UCD.)

@@ -1,8 +1,10 @@
 /*
+ * TO DO:
+ *
  * If IIIF jsonLd.seeAlso.format == 'application/tei+xml' then assign value 'none' to manifestsFromThePage hash to suppress link??
- * 
+ *
  * ---
- * 
+ *
  * linktoFromThePage.js: Mirador plugin to create userMenu links to the FromThePage (FtP) transcription platform
  *
  * plugin loads manifests and queries the FromThePage iiif/for endpoint for corresponding derivative manifests which include FtP work_id's
@@ -27,6 +29,8 @@
 
 var configFromThePage = {
     "show_status_link": true, // provide link to FromThePage's xhtml output
+    "show_transcribed_link": false, // if already transcribed, there is a seeAlso link for format property == 'application/tei+xml' ; show if true, not if false
+    // this is a UCD practice when a TEI document is available in the UCD repository
     "timeoutFromThePage": 5000 // maximum tolerable latency for a FromThePage response
 }
 
@@ -107,49 +111,6 @@ var linkFromThePage = {
      * functions
      */
     
-    /*  UCD specific: */
-    
-    /*
-    windowGetJSON: function (ID, scope) {
-    //if (manifestsFromThePage[ID] !== undefined) {
-    //    return;
-    //}
-    ID = $.trim(ID);
-    Mirador.MetadataView.prototype.getMetadataDetails = function (jsonLd) {
-    var recordID = jsonLd[ "@id"];
-    var duchasURI;
-    if (ID == recordID) {
-    if (jsonLd.seeAlso) {
-    $.each(jsonLd.seeAlso, function (index, item) {
-    var label = Mirador.JsonLd.getTextValue(item.label);
-    var format = Mirador.JsonLd.getTextValue(item.format);
-    var id = Mirador.JsonLd.getTextValue(item[ "@id"]);
-    if (~ id.indexOf("http://www.duchas.ie/en/cbes/")) {
-    duchasURI = id;
-    }
-    if (duchasURI !== undefined) {
-    manifestsFromThePage[ID] = duchasURI;
-    }
-    if (format == 'application/tei+xml') {
-    duchasTranscribed = true;
-    }
-    });
-    }
-    // add all canvas @ids in the manifest to the manifestsFromThePage hash
-    $.each(jsonLd.sequences[0].canvases, function (index, item) {
-    $.each(this, function (index, val) {
-    if (index == '@id') {
-    manifestsFromThePage[val] = duchasURI;
-    }
-    });
-    });
-    }
-    return;
-    }
-    },
-     */
-    /* end UCD specific */
-    
     workspaceEventHandler: function () {
         var this_ = this;
         var originalListenForActions = Mirador.Workspace.prototype.listenForActions;
@@ -164,34 +125,42 @@ var linkFromThePage = {
             
             _this.eventEmitter.subscribe('manifestReceived', function (event, data) {
                 /*
-                 *
                  */
                 //console.log('2: manifest received');
                 /*
-                 *
                  */
                 if (data.jsonLd !== undefined) {
                     if (data.jsonLd[ "@id"].includes("duchas")) {
                         var duchasURI;
+                        var transcribed = false;
                         var manifestID = 'https:' + data.uri;
                         if (data.jsonLd.seeAlso) {
                             $.each(data.jsonLd.seeAlso, function (index, item) {
                                 var label = Mirador.JsonLd.getTextValue(item.label);
                                 var format = Mirador.JsonLd.getTextValue(item.format);
+                                if (~ format.indexOf("application/tei+xml")) {
+                                    transcribed = true;
+                                }
                                 var id = Mirador.JsonLd.getTextValue(item[ "@id"]);
                                 if (~ id.indexOf("http://www.duchas.ie/en/cbes/")) {
                                     duchasURI = id;
                                 }
-                                if (duchasURI !== undefined) {
-                                    manifestsFromThePage[manifestID] = duchasURI;
-                                }
                             });
+                        }
+                        if (duchasURI !== undefined && transcribed == false) {
+                            if (configFromThePage['show_transcribed_link'] == true) {
+                                manifestsFromThePage[manifestID] = duchasURI;
+                            } else {
+                                manifestsFromThePage[manifestID] = duchasURI;
+                            }
+                        } else {
+                            manifestsFromThePage[manifestID] = null;
                         }
                         /* add all canvas @ids in the manifest to the manifestsFromThePage hash */
                         $.each(data.jsonLd.sequences[0].canvases, function (index, item) {
                             $.each(this, function (index, val) {
                                 if (index == '@id') {
-                                    manifestsFromThePage[val] = duchasURI;
+                                    manifestsFromThePage[val] = manifestsFromThePage[manifestID];
                                 }
                             });
                         });
@@ -220,7 +189,6 @@ var linkFromThePage = {
             
             _this.eventEmitter.subscribe('REMOVE_NODE', function (event, data) {
                 //console.log('4: node removed');
-                //console.log($(this).attr("data-image-id"));
                 hideTranscriptionLink();
                 if (getNumSlots() < 2) {
                     var currentImgID = getCurrentCanvasID();
@@ -233,33 +201,15 @@ var linkFromThePage = {
             /*
             _this.eventEmitter.subscribe('ADD_SLOT_ITEM', function(event, data) {
             //console.log('5: slot added');
-            hideTranscriptionLink();
             })
              */
             _this.eventEmitter.subscribe('ADD_WINDOW', function (event, data) {
                 //console.log('6: window added');
-                hideTranscriptionLink();
                 
+                hideTranscriptionLink();
                 if (data.manifest !== undefined) {
                     if (data.manifest.uri !== undefined && data.manifest.uri !== null) {
                         var canvasID = data.canvasID;
-                        
-                        /* add all canvas @ids in the manifest to the manifestsFromThePage hash */
-                        
-                        /* /
-                        $.each(data.manifest.jsonLd.sequences[0].canvases, function (index, item) {
-                        $.each(this, function (index, val) {
-                        if (index == '@id') {
-                        if (manifestsFromThePage[canvasID] == null) {
-                        manifestsFromThePage[val] = null;
-                        } else if (manifestsFromThePage[canvasID].length) {
-                        manifestsFromThePage[val] = manifestsFromThePage[canvasID];
-                        }
-                        }
-                        });
-                        });
-                         */
-                        
                         if (manifestsFromThePage[data.manifest.uri] !== undefined && manifestsFromThePage[data.manifest.uri] !== null) {
                             var fromThePageURI = linktoFromThePage(data.manifest.uri, 'manifests');
                         }
@@ -318,12 +268,7 @@ var linkFromThePage = {
             
             this.eventEmitter.subscribe('windowUpdated', function (event, data) {
                 /*
-                 *
-                 */
-                //console.log('A: window updated');
-                //console.log(manifestsFromThePage);
-                /*
-                 *
+                 * console.log('A: window updated');
                  */
                 //console.log(data);
                 hideTranscriptionLink();
@@ -428,14 +373,6 @@ function linktoFromThePage(ID, type) {
         updateTranscriptionLink(ID, type);
         return manifestsFromThePage[ID];
     }
-    
-    /* not functional ...
-    if (ID.indexOf("duchas:") >= 0) {
-    alert('Oy!');
-    linkFromThePage.windowGetJSON(ID, "duchas");
-    return;
-    }
-     */
     
     var url = 'https://fromthepage.com/iiif/for/' + ID;
     

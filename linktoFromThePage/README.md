@@ -1,13 +1,3 @@
-# mirador-plugins-ucd
-
-This repository contains extensions for the IIIF viewer Mirador (see http://projectmirador.org/).
-
-## IIIF-imageManipulation
-
-A tool for editing images by manipulating IIIF parameters, including a visual cropping tool and Mirador plugin.
-
-See: [https://github.com/jbhoward-dublin/iiif-imageManipulation](https://github.com/jbhoward-dublin/iiif-imageManipulation)
-
 ## Link to FromThePage 
 
 ```linktoFromThePage_ucd.js```

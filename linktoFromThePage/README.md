@@ -10,7 +10,7 @@ See: [https://github.com/jbhoward-dublin/iiif-imageManipulation](https://github.
 
 ## Link to FromThePage 
 
-linktoFromThePage_ucd.js
+```linktoFromThePage_ucd.js```
 
 Determines whether manifests loaded to Mirador have been imported to the [FromThePage transcription platform](http://fromthepage.com/) then presents a userButton to link to the resource on that site.
 

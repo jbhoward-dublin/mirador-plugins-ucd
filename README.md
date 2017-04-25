@@ -8,7 +8,7 @@ A tool for editing images by manipulating IIIF parameters, including a visual cr
 
 See: [https://github.com/jbhoward-dublin/iiif-imageManipulation](https://github.com/jbhoward-dublin/iiif-imageManipulation)
 
-## Link to FromThePage 
+## linktoFromThePage 
 
 See: [linktoFromThePage.js](https://github.com/jbhoward-dublin/mirador-plugins-ucd/tree/master/linktoFromThePage)
 

@@ -130,6 +130,24 @@ var linkFromThePage = {
                 /*
                  */
                 if (data.jsonLd !== undefined) {
+                    /* if collections_FtP.json data is available, initialise manifestsFromThePage with null values for collections NOT in FromThePage */
+                    if (data.jsonLd.within !== undefined) {
+                        if (collectionsFtP !== undefined) {
+                            var isTranscribedCollection = isFtP(data.jsonLd.within[ "@id"]);
+                            if (isTranscribedCollection == false) {
+                                var manifestID = 'https:' + data.uri;
+                                manifestsFromThePage[manifestID] = null;
+                                $.each(data.jsonLd.sequences[0].canvases, function (index, item) {
+                                    $.each(this, function (index, val) {
+                                        if (index == '@id') {
+                                            manifestsFromThePage[val] = null;
+                                        }
+                                    });
+                                });
+                            }
+                        }
+                    }
+                    /* duchas specific: */
                     if (data.jsonLd[ "@id"].includes("duchas")) {
                         var duchasURI;
                         var transcribed = false;
@@ -148,7 +166,7 @@ var linkFromThePage = {
                             });
                         }
                         if (duchasURI !== undefined && transcribed == false) {
-                            if (configFromThePage['show_transcribed_link'] == true) {
+                            if (configFromThePage[ 'show_transcribed_link'] == true) {
                                 manifestsFromThePage[manifestID] = duchasURI;
                             } else {
                                 manifestsFromThePage[manifestID] = duchasURI;
@@ -316,12 +334,10 @@ var linkFromThePage = {
 };
 
 /*
- * initialise to avoid problem with duplicate imports in FromThePage
+ * initialise to avoid problem with duplicate imports in FromThePage: these references UCD-specific
  */
 
-/* UCD specific: */
 var duchasTranscribed = false;
-
 var manifestsFromThePage = {
     "https://data.ucd.ie/api/img/manifests/ivrla:3849": "https://fromthepage.com/iiif/355/manifest",
     "https://data.ucd.ie/api/img/ivrla:3849/canvas/ivrla:3850": "https://fromthepage.com/iiif/355/manifest",
@@ -334,6 +350,7 @@ var manifestsFromThePage = {
     "https://data.ucd.ie/api/img/ivrla:3835/canvas/ivrla:3836": "https://fromthepage.com/iiif/344/manifest",
     "https://data.ucd.ie/api/img/ivrla:3835/canvas/ivrla:3837": "https://fromthepage.com/iiif/344/manifest"
 };
+var localCollections;
 
 /*
  * functions
@@ -496,6 +513,19 @@ function hideTranscriptionLink() {
 
 function getNumSlots() {
     return $('div.panel-thumbnail-view img.highlight').length;
+}
+
+function isFtP(collectionId) {
+    /* is the manifest part of a collection declared in local collections_FtP.json? */
+    var status = false;
+    $.each(collectionsFtP, function (index, item) {
+        $.each(item, function (key, collection) {
+            if (collection.collectionIdLocal == collectionId) {
+                status = true;
+            }
+        });
+    });
+    return status;
 }
 
 $(document).ready(function () {

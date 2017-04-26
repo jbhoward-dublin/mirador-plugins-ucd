@@ -216,11 +216,12 @@ var linkFromThePage = {
                     return;
                 }
             })
-            /*
+            
             _this.eventEmitter.subscribe('ADD_SLOT_ITEM', function(event, data) {
-            //console.log('5: slot added');
+                 //console.log('5: slot added');
+                hideTranscriptionLink();
             })
-             */
+            
             _this.eventEmitter.subscribe('ADD_WINDOW', function (event, data) {
                 //console.log('6: window added');
                 
@@ -288,7 +289,6 @@ var linkFromThePage = {
                 /*
                  * console.log('A: window updated');
                  */
-                //console.log(data);
                 hideTranscriptionLink();
                 if (getNumSlots() > 1) {
                     return;

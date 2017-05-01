@@ -28,7 +28,7 @@
  */
 
 var configFromThePage = {
-    "show_status_link": true, // provide link to FromThePage's xhtml output
+    "show_status_link": false, // provide link to FromThePage's xhtml output
     "show_transcribed_link": false, // if already transcribed, there is a seeAlso link for format property == 'application/tei+xml' ; show if true, not if false
     // this is a UCD practice when a TEI document is available in the UCD repository
     "timeoutFromThePage": 5000 // maximum tolerable latency for a FromThePage response

@@ -28,9 +28,10 @@
  */
 
 var configFromThePage = {
-    "show_status_link": false, // provide link to FromThePage's xhtml output
+    "local_domain": "data.ucd.ie",  // identifying the local domain prevents lookup of resources from outside that domain
+    "show_status_link": false,      // provide link to FromThePage's xhtml output
     "show_transcribed_link": false, // if already transcribed, there is a seeAlso link for format property == 'application/tei+xml' ; show if true, not if false
-    // this is a UCD practice when a TEI document is available in the UCD repository
+    // show_transcribed_link is a UCD practice when a TEI document is available in the UCD repository
     "timeoutFromThePage": 5000 // maximum tolerable latency for a FromThePage response
 }
 
@@ -368,17 +369,29 @@ function getCurrentCanvasID() {
     return $.trim($(".thumbnail-image.highlight").attr('data-image-id'));
 }
 
+function isLocalResource(ID) {
+    if (configFromThePage['local_domain'] && configFromThePage['local_domain'] !== '') {
+        if (ID.includes(configFromThePage['local_domain'])) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function linktoFromThePage(ID, type) {
-    if (typeof type === undefined) {
-        type = 'manifests';
+    if (isLocalResource(ID) == false) {
+        return;
     }
     if (manifestsFromThePage[ID] !== undefined) {
         if (manifestsFromThePage[ID] == null) {
             return;
         }
     }
-    if (manifestsFromThePage[ID] == undefined) {
+    else if (manifestsFromThePage[ID] == undefined) {
         manifestsFromThePage[ID] = false;
+    }
+    if (typeof type === undefined) {
+        type = 'manifests';
     }
     /* add protocol declaration if missing ... not appropriate for all sites */
     if (ID.substring(0, 2) == '//') {

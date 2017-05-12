@@ -27,5 +27,5 @@ If your resources have been imported to FromThePage via IIIF collections, you ca
 ```     
      <script src="/mirador/build/mirador/mirador.js"></script>
      <script src="/mirador/data/collections_FtP.js"></script>
-     <script src="/mirador/plugins/linktoFromThePage_ucd.js"></script>```
+     <script src="/mirador/plugins/linktoFromThePage_ucd.js"></script>
      

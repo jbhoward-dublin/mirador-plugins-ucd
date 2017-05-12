@@ -24,7 +24,8 @@ The file ```linktoFomThePage_ucd.js```  includes a range of configuration option
 
 If your resources have been imported to FromThePage via IIIF collections, you can limit lookups to the FromThePage endpoint by initialising a JSON array of registered collections in the data file ```collections_FtP.json```. Assure that the plugin will be properly initialised with these values by adding the file ```collections_FtP.js``` to the Mirador startup file *before* including the plugin, so:
 
-```     <script src="/mirador/build/mirador/mirador.js"></script>
+```     
+     <script src="/mirador/build/mirador/mirador.js"></script>
      <script src="/mirador/data/collections_FtP.js"></script>
-     <script src="/mirador/plugins/linktoFromThePage_ucd.js"></script>
+     <script src="/mirador/plugins/linktoFromThePage_ucd.js"></script>```
      

@@ -126,9 +126,7 @@ var linkFromThePage = {
             
             _this.eventEmitter.subscribe('manifestReceived', function (event, data) {
                 /*
-                 */
                 //console.log('2: manifest received');
-                /*
                  */
                 if (data.jsonLd !== undefined) {
                     /* if collections_FtP.json data is available, initialise manifestsFromThePage with null values for collections NOT in FromThePage */
@@ -237,14 +235,13 @@ var linkFromThePage = {
                     }
                 }
                 if (data.canvasID !== undefined && data.canvasID !== null) {
-                    /* there appears to be a Mirador bug returning a bad canvasID, also with windowUpdated function (used below)
+                    /* possibly a Mirador bug returning a bad canvasID, also with windowUpdated function (used below)
                      * for example: https://data.ucd.ie/api/img/ivrla:3853/canvas/ivrla:3853
                      * compare manifest: https://data.ucd.ie/api/img/manifests/ivrla:3853
                      * the test below is specific to UCD manifests
                      */
                     var canvasID = data.canvasID;
                     if (getPID(data.canvasID) == canvasID.split('/').pop().split('.').shift()) {
-                        /* we've got a problem ... */
                         console.log('Mirador.Workspace ADD_WINDOW event returned bad value for data.canvasID');
                         var tmp = 'https://data.ucd.ie/api/img/manifests/' + getPID(data.canvasID);
                         var currentImgID = getCurrentCanvasID();

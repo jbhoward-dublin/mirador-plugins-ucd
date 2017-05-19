@@ -28,8 +28,8 @@
  */
 
 var configFromThePage = {
-    "local_domain": "data.ucd.ie",  // identifying the local domain prevents lookup of resources from outside that domain
-    "show_status_link": false,      // provide link to FromThePage's xhtml output
+    "local_domain": "data.ucd.ie", // identifying the local domain prevents lookup of resources from outside that domain
+    "show_status_link": false, // provide link to FromThePage's xhtml output
     "show_transcribed_link": false, // if already transcribed, there is a seeAlso link for format property == 'application/tei+xml' ; show if true, not if false
     // show_transcribed_link is a UCD practice when a TEI document is available in the UCD repository
     "timeoutFromThePage": 5000 // maximum tolerable latency for a FromThePage response
@@ -81,13 +81,12 @@ var linkFromThePage = {
                 10000);
             }
         }
-        this.addLocalesToViewer();
     },
     
     /* adds  locales to the i18next localisation */
-    addLocalesToViewer: function () {
+    addFtPLocalesToViewer: function () {
         for (language in this.locales) {
-            i18n.addResources(
+            i18next.addResources(
             language, 'translation',
             this.locales[language]);
         }
@@ -216,13 +215,15 @@ var linkFromThePage = {
                 }
             })
             
-            _this.eventEmitter.subscribe('ADD_SLOT_ITEM', function(event, data) {
-                 //console.log('5: slot added');
+            _this.eventEmitter.subscribe('ADD_SLOT_ITEM', function (event, data) {
+                //console.log('5: slot added');
                 hideTranscriptionLink();
             })
             
             _this.eventEmitter.subscribe('ADD_WINDOW', function (event, data) {
                 //console.log('6: window added');
+                //str = JSON.stringify(data, null, 4); // (Optional) beautiful indented output.
+                //console.log(str);
                 
                 hideTranscriptionLink();
                 if (data.manifest !== undefined) {
@@ -324,6 +325,9 @@ var linkFromThePage = {
     
     /* initialise plugin */
     init: function () {
+        i18next.on('initialized', function () {
+            this.addFtPLocalesToViewer();
+        }.bind(this));
         /* add event handlers to Mirador */
         this.workspaceEventHandler();
         this.addEventHandlersToViewer('ImageView');
@@ -367,8 +371,8 @@ function getCurrentCanvasID() {
 }
 
 function isLocalResource(ID) {
-    if (configFromThePage['local_domain'] && configFromThePage['local_domain'] !== '') {
-        if (ID.includes(configFromThePage['local_domain'])) {
+    if (configFromThePage[ 'local_domain'] && configFromThePage[ 'local_domain'] !== '') {
+        if (ID.includes(configFromThePage[ 'local_domain'])) {
             return true;
         }
     }
@@ -383,8 +387,7 @@ function linktoFromThePage(ID, type) {
         if (manifestsFromThePage[ID] == null) {
             return;
         }
-    }
-    else if (manifestsFromThePage[ID] == undefined) {
+    } else if (manifestsFromThePage[ID] == undefined) {
         manifestsFromThePage[ID] = false;
     }
     if (typeof type === undefined) {

@@ -35,7 +35,7 @@ var iiifGeoJSON = {
     ' .mapview { position:relative; }',
     ' .mapview:before { content: "\\F278"; font-family: FontAwesome; left:-22px; position:absolute; top:1px; }',
     ' .mapview-override:before { content: none; left:-22px; position:absolute; top:1px; }',
-    ' .overlayMap { display: none; position: absolute; right: 0; top: 0; content-box: border-box; border-style: solid; border-width: 3px; border-color: #grey; background-color: rgba(255,255,255,0.9); opacity: 1; z-index:1; width: 80%; overflow-y: hidden; height: 75%; direction: rtl!important; resize: both; overflow: auto; }',
+    ' .overlayMap { display: none; position: absolute; right: 0; top: 0; content-box: border-box; border-style: solid; border-width: 3px; border-color: #grey; background-color: rgba(255,255,255,0.9); opacity: 1; z-index:4; width: 80%; overflow-y: hidden; height: 75%; direction: rtl!important; resize: both; overflow: auto; }',
     ' #opacitySlider {width: 30px; position: absolute;top: 202px;right: 12px; margin: auto;transform: translate(-50%, -50%); opacity: 1!important; }',
     ' .rangeslider,',
     ' input[type="range"] {max-width: 400px; }',
@@ -187,9 +187,9 @@ var iiifGeoJSON = {
                 }
             }
             
-            this.element.find('.mirador-icon-canvas-map').on('click', function () {
-                event.preventDefault();
+            this.element.find('.mirador-icon-canvas-map').on('click', function (event) {
                 if (mapUrl !== undefined || $('.mirador-icon-canvas-map').attr("href") !== undefined) {
+                    event.preventDefault();
                     if (! $('div.layout-slot[data-layout-slot-id="' + current_slot_id + '"] div.overlayMap').length) {
                         $('div.layout-slot[data-layout-slot-id="' + current_slot_id + '"] .mirador-icon-canvas-map').attr("href", mapUrl);
                         this_.showMap(mapUrl, current_slot_id, canvasID);
@@ -397,12 +397,15 @@ var iiifGeoJSON = {
 
 $(document).ready(function () {
     iiifGeoJSON.init();
-    $(document).on('click', function () {
-        var target = event.target;
+    $('.mirador-icon-canvas-map').on('click', function (event) {
+        event.preventDefault(); 
+    });
+    $(document).on('click', function (event) {
         /* close an open map window */
+        var target = event.target;
         if ($(target).hasClass("fa-times")) {
             var current_slot_id = $("i.fa-times").closest('span').attr("data-slotid");
             $('div.layout-slot[data-layout-slot-id="' + current_slot_id + '"] .overlayMap').toggle(300);
-        }
+        } 
     });
 });

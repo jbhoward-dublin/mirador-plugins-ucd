@@ -25,3 +25,7 @@ The plugin is written to meet specific needs at University College Dublin, which
 To integrate with Mirador, install [geojson-share-maps](https://github.com/jbhoward-dublin/geojson-share-maps) in your web directory, and install the plugin in your Mirador plugins directory. Create a link to the plugin from the Mirador shartup file. A link to launch a map as an overlay will appear on the Mirador 'slot' menu.
 
 Further details are available in this [Gist](https://gist.github.com/ucddigital/1ca55a7d5b7656d9fa717ef4d473490a).
+
+<kbd>
+<img alt="demo image" src="https://github.com/jbhoward-dublin/mirador-plugins-ucd/raw/master/img/2017-07-02_Mirador_GeoJSON_demo_02.gif"></img>
+</kbd>

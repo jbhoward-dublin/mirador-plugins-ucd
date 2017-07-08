@@ -171,8 +171,10 @@ var linktoFromThePage = {
       var canvasID = this.canvasID;
       var current_slot_id = $('.highlight[data-image-id="' + canvasID + '"]').closest("div.layout-slot").attr('data-layout-slot-id');
       /* already declared */
-      if (manifestsFromThePage[_this.manifest.uri] !== undefined && manifestsFromThePage[_this.manifest.uri] !== null) {
+      if (manifestsFromThePage[_this.manifest.uri] !== undefined && manifestsFromThePage[_this.manifest.uri] !== null && manifestsFromThePage[_this.manifest.uri] !== false) {
         var link = this_.setLinkTypeFromThePage(manifestsFromThePage[_this.manifest.uri], 'read');
+        console.log('oink');
+        console.log(manifestsFromThePage[_this.manifest.uri]);
         showTranscriptionLink(current_slot_id, link);
         return;
       } else if (! canvasID.includes("duchas")) {
@@ -182,7 +184,7 @@ var linktoFromThePage = {
       }
       if (canvasID.includes("duchas")) {
         /* handle dúchas records here */
-        if (manifestsFromThePage[canvasID] !== undefined && manifestsFromThePage[canvasID] !== '' && manifestsFromThePage[canvasID] !== null) {
+        if (manifestsFromThePage[canvasID] !== undefined && manifestsFromThePage[canvasID] !== '' && manifestsFromThePage[canvasID] !== null && manifestsFromThePage[canvasID] !== false) {
           /* (chapter objects have null manifestsFromThePage values) */
           showTranscriptionLink(current_slot_id, manifestsFromThePage[canvasID]);
           return;

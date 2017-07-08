@@ -12,7 +12,9 @@ See: [https://github.com/jbhoward-dublin/iiif-imageManipulation](https://github.
 
 See: [linktoFromThePage.js](https://github.com/jbhoward-dublin/mirador-plugins-ucd/tree/master/linktoFromThePage)
 
-Determines whether manifests loaded to Mirador have been imported to the [FromThePage transcription platform](http://fromthepage.com/) then presents a userButton to link to the resource on that site.
+Determines whether manifests loaded to Mirador have been imported to the [FromThePage transcription platform](http://fromthepage.com/) then presents an icon on the "slot" menu to link to the resource on that site.
+
+The plugin also handles manifests representing items in the [Dúchas platform](http://www.duchas.ie/) which are available for transcription.
 
 ## mirador-plugin-geojson
 

@@ -16,7 +16,7 @@ Determines whether manifests loaded to Mirador have been imported to the [FromTh
 
 ## mirador-plugin-geojson
 
-A plugin to enable a map visualisation based on a GeoJSON service specified within a IIIF manifest. The plugin exposes a slippy map as an overlay, launched from the Mirador "slot" menu. 
+A plugin to enable a map visualisation based on a GeoJSON service specified within a IIIF manifest. The plugin exposes a slippy map as an overlay, launched from a map marker icon on the Mirador "slot" menu. 
 
 The plugin is found at [https://github.com/jbhoward-dublin/geojson-share-maps](https://github.com/jbhoward-dublin/mirador-plugins-ucd/tree/master/mirador-plugin-geojson). The plugin also requires that [geojson-share-maps](https://github.com/jbhoward-dublin/geojson-share-maps) be installed, in a version adapted from [the app](https://github.com/bmcbride/geojson-share-maps) written by [Bryan McBride](https://github.com/bmcbride). 
 

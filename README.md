@@ -18,9 +18,9 @@ Determines whether manifests loaded to Mirador have been imported to the [FromTh
 
 A plugin to enable a map visualisation based on a GeoJSON service specified within a IIIF manifest. The plugin exposes a slippy map as an overlay, launched from the Mirador "slot" menu. 
 
-The plugin is found at [https://github.com/jbhoward-dublin/geojson-share-maps](https://github.com/jbhoward-dublin/geojson-share-maps).
+The plugin is found at [https://github.com/jbhoward-dublin/geojson-share-maps](https://github.com/jbhoward-dublin/mirador-plugins-ucd/tree/master/mirador-plugin-geojson). The plugin also requires that [geojson-share-maps](https://github.com/jbhoward-dublin/geojson-share-maps) be installed, in a version adapted from [the app](https://github.com/bmcbride/geojson-share-maps) written by [Bryan McBride](https://github.com/bmcbride). 
 
-The plugin requires that the localised version of [geojson-share-maps](https://github.com/jbhoward-dublin/geojson-share-maps) be installed, adapted from [the app](https://github.com/bmcbride/geojson-share-maps) written by [Bryan McBride](https://github.com/bmcbride). It is written to accommodate specific needs at University College Dublin, which makes use of a local GeoJSON endpoint (documentation at [https://digital.ucd.ie/docs/DataServicesAPIs_v0.06_Geospatial.pdf](https://digital.ucd.ie/docs/DataServicesAPIs_v0.06_Geospatial.pdf)). It will also display arbitrary GeoJSON from other enpoints, and could be adapted with some effort to other specific environments.
+The plugin is written to meet specific needs at University College Dublin, which makes use of a local GeoJSON endpoint (documentation at [https://digital.ucd.ie/docs/DataServicesAPIs_v0.06_Geospatial.pdf](https://digital.ucd.ie/docs/DataServicesAPIs_v0.06_Geospatial.pdf)). The plugin and associated mapping app will also display arbitrary GeoJSON from other enpoints, and could be adapted with some effort to other specific environments.
 
 To integrate with Mirador, install [geojson-share-maps](https://github.com/jbhoward-dublin/geojson-share-maps) in your web directory, and install the plugin in your Mirador plugins directory. Create a link to the plugin from the Mirador shartup file. A link to launch a map as an overlay will appear on the Mirador 'slot' menu.
 

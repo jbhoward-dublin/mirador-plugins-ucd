@@ -20,7 +20,7 @@ The plugin also handles manifests representing items in the [Dúchas platform](h
 
 A plugin to enable a map visualisation based on a GeoJSON service specified within a IIIF manifest. The plugin exposes a slippy map as an overlay, launched from a map marker icon on the Mirador "slot" menu. 
 
-The plugin is found at [https://github.com/jbhoward-dublin/geojson-share-maps](https://github.com/jbhoward-dublin/mirador-plugins-ucd/tree/master/mirador-plugin-geojson). The plugin also requires that [geojson-share-maps](https://github.com/jbhoward-dublin/geojson-share-maps) be installed, in a version adapted from [the app](https://github.com/bmcbride/geojson-share-maps) written by [Bryan McBride](https://github.com/bmcbride). 
+The plugin is found at [https://github.com/jbhoward-dublin/mirador-plugins-ucd/tree/master/mirador-plugin-geojson](https://github.com/jbhoward-dublin/mirador-plugins-ucd/tree/master/mirador-plugin-geojson). The plugin also requires that [geojson-share-maps](https://github.com/jbhoward-dublin/geojson-share-maps) be installed, in a version adapted from [the app](https://github.com/bmcbride/geojson-share-maps) written by [Bryan McBride](https://github.com/bmcbride). 
 
 The plugin is written to meet specific needs at University College Dublin, which makes use of a local GeoJSON endpoint (documentation at [https://digital.ucd.ie/docs/DataServicesAPIs_v0.06_Geospatial.pdf](https://digital.ucd.ie/docs/DataServicesAPIs_v0.06_Geospatial.pdf)). The plugin and associated `geojson-share-maps` app will also display arbitrary GeoJSON from other enpoints, and could be adapted with some effort to other specific environments.
 

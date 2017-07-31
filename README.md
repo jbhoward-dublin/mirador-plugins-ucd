@@ -8,9 +8,9 @@ A tool for editing images by manipulating IIIF parameters, including a visual cr
 
 See: [https://github.com/jbhoward-dublin/iiif-imageManipulation](https://github.com/jbhoward-dublin/iiif-imageManipulation) for both the app and the plugin.
 
-## linktoFromThePage 
+## mirador-plugin-FromThePage 
 
-See: [linktoFromThePage.js](https://github.com/jbhoward-dublin/mirador-plugins-ucd/tree/master/linktoFromThePage)
+See: [linktoFromThePage.js](https://github.com/jbhoward-dublin/mirador-plugins-ucd/tree/master/mirador-plugin-FromThePage)
 
 Determines whether manifests loaded to Mirador have been imported to the [FromThePage transcription platform](http://fromthepage.com/) then presents an icon on the "slot" menu to link to the resource on that site.
 

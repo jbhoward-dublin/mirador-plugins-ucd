@@ -1,0 +1,87 @@
+{"collections":
+  [
+    {
+        "collectionId": 139,
+        "collectionType": "collection",
+        "collectionIdLocal": "https://data.ucd.ie/api/img/collection/ivrla:7150",
+        "collectionScope": "partial",
+        "access": "public",
+        "projectOwner": "ucdlibrary",
+        "projectManager": "jbhoward",
+        "title": "Boehm/Casement Papers",
+        "harvest": "tei"
+    },
+    {
+        "collectionId": 86,
+        "collectionType": "collection",
+        "collectionStatus": "incomplete",
+        "collectionIdLocal": "https://data.ucd.ie/api/img/collection/ucdlib:43945",
+        "collectionScope": "complete",
+        "access": "private",
+        "projectOwner": "ucdlibrary",
+        "projectManager": "jbhoward",
+        "title": "Dublin Metropolitan Police (DMP) Prisoners Books",
+        "harvest": "tei"
+    },
+    {
+        "collectionId": 87,
+        "collectionType": "collection",
+        "collectionStatus": "incomplete",
+        "collectionIdLocal": "https://data.ucd.ie/api/img/collection/ivrla:991",
+        "collectionScope": "complete",
+        "access": "private",
+        "projectOwner": "ucdlibrary",
+        "projectManager": "jbhoward",
+        "title": "Irish Dialect Archive Manuscript Collection",
+        "harvest": "tei"
+    },
+    {
+        "collectionId": 93,
+        "collectionType": "collection",
+        "collectionStatus": "incomplete",
+        "collectionIdLocal": "https://data.ucd.ie/api/img/collection/ivrla:18726",
+        "collectionScope": "partial",
+        "access": "public",
+        "projectOwner": "ucdlibrary",
+        "projectManager": "jbhoward",
+        "title": "Luke Wadding Papers",
+        "harvest": "none"
+    },
+    {
+        "collectionId": 71,
+        "collectionType": "collection",
+        "collectionStatus": "incomplete",
+        "collectionIdLocal": "https://data.ucd.ie/api/img/collection/ivrla:3573",
+        "collectionScope": "partial",
+        "access": "public",
+        "projectOwner": "ucdlibrary",
+        "projectManager": "jbhoward",
+        "title": "UCD Letters",
+        "harvest": "none"
+    },
+    {
+        "collectionId": 69,
+        "collectionType": "collection",
+        "collectionStatus": "incomplete",
+        "collectionIdLocal": "https://data.ucd.ie/api/img/collection/ivrla:3573",
+        "collectionScope": "partial",
+        "access": "private",
+        "projectOwner": "nuiglibray",
+        "projectManager": "jcox",
+        "notification": "somebody@nuig.ie",
+        "title": "NUIG Test Collection",
+        "harvest": "none"
+    },
+    {
+        "documentSetId": 16,
+        "collectionType": "documentSet",
+        "collectionStatus": "incomplete",
+        "collectionIdLocal": null,
+        "access": "public",
+        "projectOwner": "ucdlibrary",
+        "projectManager": "jbhoward",
+        "title": "Correspondence of Cardinal John Henry Newman, 1834-1889",
+        "harvest": "tei"
+    }
+  ]
+}

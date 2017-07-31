@@ -1,14 +1,14 @@
 var iiifGeoJSON = {
-  /* plugin options */
+  /* options of the plugin */
   options: {},
   
   /* map configuration */
   mapConfig: {
     "attribution": "UCD Library, University College Dublin", /* attribution to appear at bottom of map visualisation */
-    "cluster": true,        /* cluster map points */
+    "cluster": true, /* cluster map points */
     "display_fields": null, /* custom list of fields in an expected GeoJSON response, if any */
-    "external_map_service": "https://example.org/maps-geojson/",    /* an external service for externally referenced GeoJSON objects demo site at 'https://jbhoward-dublin.github.io/geojson-share-map */
-    "logo": "https://example.org/img/logos/your_logo.png",          /* logo to appear in map display header */
+    "external_map_service": "https://dev01.digital.ucd.ie/maps-geojson/", /* an external service for externally referenced GeoJSON objects demo site at 'https://jbhoward-dublin.github.io/geojson-share-map */
+    "logo": "https://digital.ucd.ie/images/logos/ucd_logo_sm.png", /* logo to appear in map display header */
     "map_link_position": "overlay", /* 'overlay' present the map as an overlay with slight transparency in the Mirador slot ; 'tab' open the map in a new tab */
     "title_field": null
   },
@@ -16,14 +16,17 @@ var iiifGeoJSON = {
   /* i18next locales */
   locales: {
     'de': {
+      'map-canvas-image': 'Moderne Landcarte ansehen',
       'mapTooltip': 'Moderne Landcarte ansehen',
       'mapcloseTooltip': 'Fenster schliessen'
     },
     'en': {
+      'map-canvas-image': 'View map',
       'mapTooltip': 'View map',
       'mapcloseTooltip': 'Close map window'
     },
     'ga': {
+      'map-canvas-image': 'Amharc léarscáil',
       'mapTooltip': 'Amharc léarscáil',
       'mapcloseTooltip': 'Dún léarscáil'
     }
@@ -31,6 +34,7 @@ var iiifGeoJSON = {
   /* template for CSS styles */
   styleTemplate: Mirador.Handlebars.compile([
   '<style>',
+  '@media screen and (max-width:596px){ .mirador-icon-canvas-map {display:none!important;} }',
   '.mirador-container .window-manifest-title { font-size: 14px!important; }',
   ' .mapview { position:relative; }',
   ' .mapview:before { content: "\\F278"; font-family: FontAwesome; left:-22px; position:absolute; top:1px; }',
@@ -59,7 +63,7 @@ var iiifGeoJSON = {
   
   /* template for the map button */
   mapTemplate: Mirador.Handlebars.compile([
-  '<a title="{{t "map-canvas-image"}}" class="mirador-btn mirador-icon-canvas-map hidden" target="_blank" aria-label="{{t "map-canvas-image"}}" style="position: relative!important; padding-right:4px;">',
+  '<a title="{{t "map-canvas-image"}}" class="mirador-btn mirador-icon-canvas-map mapLink hidden" target="_blank" aria-label="{{t "map-canvas-image"}}" style="position: relative!important; padding-right:4px;">',
   '<i class="fa fa-lg fa-fw fa-map-marker" style="color:green;"></i>',
   '</a>'].join('')),
   
@@ -86,9 +90,10 @@ var iiifGeoJSON = {
   
   /* injects the button to the window menu */
   injectButtonToMenu: function (windowButtons) {
-    if (this.options.mapLink && this.options.mapLink == true) {
+    /* if removed, main menu settings widget can change the value to false ; button is hidden by default */
+    //if (this.options.mapLink && this.options.mapLink == true) {
       $(windowButtons).prepend(this.mapTemplate());
-    }
+    //}
   },
   
   /* inject style template */
@@ -104,7 +109,7 @@ var iiifGeoJSON = {
     Mirador.Viewer.prototype.setupViewer = function () {
       origFunc.apply(this);
       var windowSettings = this.state.currentConfig.windowSettings;
-      if (windowSettings.mapLink && windowSettings.mapLink == true) {
+      if (windowSettings.plugins.mapLink && windowSettings.plugins.mapLink == true) {
         iiifGeoJSON.options[ "mapLink"] = true;
       }
     };
@@ -117,7 +122,9 @@ var iiifGeoJSON = {
     Mirador.Workspace.prototype.bindEvents = function () {
       origFunc.apply(this);
       this.eventEmitter.subscribe('WINDOW_ELEMENT_UPDATED', function (event, data) {
-        var windowButtons = data.element.find('.window-manifest-navigation');
+        var windowButtons = data.element.find('.window-manifest-navigation');        
+        //$('#window-options-panel:visible').toggle();
+        this_.setSavedPreferences();
         this_.injectButtonToMenu(windowButtons);
       });
     };
@@ -138,7 +145,8 @@ var iiifGeoJSON = {
       var current_slot_id;
       if ($('.highlight[data-image-id="' + canvasID + '"]').closest("div.layout-slot").attr('data-layout-slot-id')) {
         current_slot_id = $('.highlight[data-image-id="' + canvasID + '"]').closest("div.layout-slot").attr('data-layout-slot-id');
-      } else {
+      } 
+      else {
         current_slot_id = $('div.overlay').closest('.layout-slot').attr("data-layout-slot-id");
       }
       
@@ -150,11 +158,7 @@ var iiifGeoJSON = {
       if (mapUrl == undefined) {
         service = this.manifest.jsonLd.service;
         mapUrl = iiifGeoJSON.getManifestGeojson(service, this.manifest.uri);
-        if (mapUrl == undefined) {
-          hideMapLink(current_slot_id);
-        } else {
-          showMapLink(current_slot_id, mapUrl);
-        }
+        (mapUrl == undefined) ? hideMapLink(current_slot_id) : showMapLink(current_slot_id, mapUrl);
       }
       
       /* individual canases can be selected from the manifest-select-menu */
@@ -227,7 +231,8 @@ var iiifGeoJSON = {
       mapService = service.find(function (s) {
         return service.profile === "http://geojson.org/geojson-spec.html";
       });
-    } else if (service && service.profile) {
+    } 
+    else if (service && service.profile) {
       /* service as object */
       mapService = service.profile;
       if (mapService == "http://geojson.org/geojson-spec.html" || mapService == 'http://geojson.org/geojson-context.jsonld') {
@@ -269,7 +274,8 @@ var iiifGeoJSON = {
               }
             }
           }
-        } else if (serviceArray !== undefined && Array.isArray(canvasArray[i].service)) {
+        } 
+        else if (serviceArray !== undefined && Array.isArray(canvasArray[i].service)) {
           for (var n = 0; n < serviceArray.length; n++) {
             dctype = '';
             if (serviceArray[n] !== undefined && serviceArray[n][ "@context"] !== undefined) {
@@ -358,7 +364,8 @@ var iiifGeoJSON = {
         default:
           caption = '&title_field=title';
       }
-    } else if (this.mapConfig[ 'title_field']) {
+    } 
+    else if (this.mapConfig[ 'title_field']) {
       caption = '&title_field=' + this.configMap[ 'title_field'];
     }
     if (this.mapConfig[ 'cluster'] == true) {
@@ -367,6 +374,89 @@ var iiifGeoJSON = {
     caption = caption + '&logo=' + encodeURI(this.mapConfig[ 'logo']) + '&attribution=' + this.mapConfig[ 'attribution'].replace(' ', '%20') + '&iframe=true';
     mapUrl = this.mapConfig[ 'external_map_service'] + '?src=' + encodeURIComponent(service[ "@id"].replace('&amp;', '&')) + caption;
     return mapUrl;
+  },
+  
+  /* update menu buttons from saved settings in local storage */
+  setSavedPreferences: function (context) {    
+    /* read saved settings from local storage, then update menu and buttons */
+    var savedPreferences_buttons = localStorage.getItem('dl_settings_buttons');
+    var savedPreferences_userButtons = localStorage.getItem('dl_settings_userButtons');
+    //var savedPreferences_plugins = localStorage.getItem('dl_settings_plugins');
+
+    if (savedPreferences_buttons) {
+      updateSettings(savedPreferences_buttons);
+    }
+    if (savedPreferences_userButtons) {
+      updateSettings(savedPreferences_userButtons);
+    }
+    
+    function updateSettings(settings) {
+      /* updates both menu settings and menu buttons */
+      $.each(JSON.parse(settings), function (key, val) {
+        var className = 'a.' + key;
+        var mainMenuClasses = {
+          'a.bookmark': 'a.bookmark-workspace', 'a.changeLayout': 'a.change-layout', 'a.fullScreen': 'a.fullscreen-viewer', 'a.canvasLink': 'a.shareButtons'
+        };
+        if (mainMenuClasses[className] && mainMenuClasses[className].length) {
+          className = mainMenuClasses[className];
+        }
+        if ($.type(val) == 'boolean') {
+          var counter = 0;
+          var setLinks = setInterval(function () {
+            if ($(className).length) {
+              counter++
+              if (val == true) {
+                $(className).removeClass('noshow');
+                $('.window-options-item[name=key]').attr('checked', '');
+              } 
+              else {
+                $(className).addClass('noshow');
+                $('.mirador-container #window-options-panel .window-options-item[name="' + key + '"]').removeAttr('checked');
+              }
+              clearInterval(setLinks);
+            } 
+            else {
+              counter++;
+              if (counter > 29) {
+                clearInterval(setLinks);
+              }
+            }
+          },
+          100);
+        } 
+        else if ($.type(val) == 'object') {
+          var counter = 0;
+          var irrelevantKeys =[ 'label', 'plugin'];
+          $.each(val, function (objKey, objVal) {
+            /* skip irrelevant keys */
+            if ($.inArray(objKey, irrelevantKeys) !== -1) {
+              return;
+            }
+            className = 'a.' + objKey;
+            var setObjLinks = setInterval(function () {
+              if ($(className).length) {
+                if (objVal == false) {
+                  $('a.shareButtons').addClass('noshow');
+                  $('.mirador-container #window-options-panel .window-options-item[name="' + objKey + '"]').removeAttr('checked');
+                } 
+                else {
+                  $(className).removeClass('noshow');
+                  $('.mirador-container #window-options-panel .window-options-item[name="' + objKey + '"]').attr('checked','');
+                }
+                clearInterval(setObjLinks);
+              } 
+              else {
+                counter++;
+                if (counter > 80) {
+                  clearInterval(setObjLinks);
+                }
+              }
+            },
+            100);
+          });
+        }
+      });
+    }
   },
   
   /* adds the locales to the internationalization module of the viewer */
